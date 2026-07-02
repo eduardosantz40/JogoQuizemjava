@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css">
+    <title>JOGO QUIZ EM JAVASCRIPT</title>
+</head>
+<body>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#05070f,#020202,#05140f);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+}
+
+.quiz-card{
+    width:750px;
+    background:#070916;
+    border:1px solid #1c2240;
+    border-radius:25px;
+    padding:40px;
+    box-shadow:0 0 35px rgba(0,0,0,.5);
+}
+
+.progresso{
+    width:100%;
+    height:8px;
+    background:#141b32;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:35px;
+}
+
+.progresso div{
+    height:100%;
+    width:35%;
+    background:#d6a232;
+    border-radius:20px;
+}
+
+.quiz-card h2{
+    text-align:center;
+    font-size:38px;
+    margin-bottom:40px;
+    font-weight:700;
+}
+
+.opcoes{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.opcoes button{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    background:#090b1b;
+    border:2px solid #1c2341;
+    color:white;
+    padding:22px;
+    border-radius:18px;
+    font-size:22px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.opcoes button:hover{
+    border-color:#d6a232;
+    transform:translateY(-3px);
+}
+
+.letra{
+    width:45px;
+    height:45px;
+    border-radius:12px;
+    background:#111733;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+    color:#9aa9d3;
+}
+
+.correta{
+    background:#0f2f20 !important;
+    border:2px solid #27d96d !important;
+    color:white;
+    box-shadow:0 0 18px rgba(39,217,109,.4);
+}
+
+.errada{
+    background:#38151a !important;
+    border:2px solid #ff4343 !important;
+    color:white;
+    box-shadow:0 0 18px rgba(255,67,67,.4);
+}
+
+#btnProximo{
+    margin-top:35px;
+    float:right;
+    background:#d6a232;
+    color:#000;
+    border:none;
+    padding:16px 35px;
+    border-radius:16px;
+    font-size:19px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+#btnProximo:hover{
+    background:#e8b23b;
+    transform:scale(1.05);
+}
+
+.resultado{
+    text-align:center;
+}
+
+.resultado h1{
+    font-size:55px;
+    margin:25px 0;
+}
+
+.resultado h2{
+    font-size:60px;
+    color:#d6a232;
+}
+
+.resultado p{
+    color:#9da6bf;
+    margin-top:15px;
+}
+
+.reiniciar{
+    margin-top:40px;
+    background:#d6a232;
+    color:black;
+    border:none;
+    padding:18px 45px;
+    border-radius:18px;
+    font-size:20px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+@media(max-width:800px){
+
+.quiz-card{
+    width:95%;
+    padding:25px;
+}
+
+.quiz-card h2{
+    font-size:28px;
+}
+
+.opcoes button{
+    font-size:18px;
+    padding:18px;
+}
+
+}
+@media (max-width: 768px){
+
+.quiz-card{
+    width:95%;
+    padding:20px;
+    margin:20px auto;
+}
+
+.resultado h1{
+    font-size:38px;
+}
+
+.resultado p{
+    font-size:18px;
+}
+
+.circulo{
+    width:140px;
+    height:140px;
+}
+
+.circulo span{
+    font-size:40px;
+}
+
+.circulo small{
+    font-size:16px;
+}
+
+.reiniciar{
+    width:100%;
+    font-size:18px;
+    padding:15px;
+}
+
+.barraResultado{
+    width:100%;
+}
+
+.icone{
+    width:80px;
+    height:80px;
+    font-size:40px;
+}
+
+}
+</style>
+   <div class="quiz-card">
+
+    <div class="progresso">
+        <div id="barra"></div>
+    </div>
+
+    <h2 id="pergunta"></h2>
+
+    <div class="opcoes" id="botoesOpcoes"></div>
+
+    <button id="btnProximo" onclick="proximaPergunta()">
+        Próxima Pergunta →
+    </button>
+
+</div>
+        <script>
+const perguntas = [
+{
+pergunta:"Qual seleção venceu a primeira Copa do Mundo, em 1930?",
+opcoes:["Brasil","Uruguai","Argentina","Alemanha"],
+resposta:1
+},
+{
+pergunta:"Quantos títulos de Copa do Mundo o Brasil possui?",
+opcoes:["3","4","5","6"],
+resposta:2
+},
+{
+pergunta:"Quem venceu a Copa do Mundo de 2022?",
+opcoes:["França","Argentina","Brasil","Croácia"],
+resposta:1
+},
+{
+pergunta:"Qual país sediou a Copa de 2014?",
+opcoes:["Alemanha","Brasil","Rússia","Catar"],
+resposta:1
+},
+{
+pergunta:"Qual jogador é conhecido como Rei do Futebol?",
+opcoes:["Pelé","Messi","Maradona","Cristiano Ronaldo"],
+resposta:0
+},
+{
+pergunta:"Quem foi o campeão da Copa de 2018?",
+opcoes:["Croácia","Alemanha","França","Argentina"],
+resposta:2
+},
+{
+pergunta:"Qual seleção tem 4 títulos mundiais?",
+opcoes:["Brasil","Argentina","Itália","Uruguai"],
+resposta:2
+},
+{
+pergunta:"Onde aconteceu a Copa de 2022?",
+opcoes:["Catar","Estados Unidos","Japão","China"],
+resposta:0
+},
+{
+pergunta:"Qual país venceu a Copa de 2010?",
+opcoes:["Holanda","Alemanha","Espanha","Brasil"],
+resposta:2
+},
+{
+pergunta:"Quem marcou dois gols na final da Copa de 2002?",
+opcoes:["Rivaldo","Ronaldinho","Ronaldo Fenômeno","Kaká"],
+resposta:2
+}
+];
+
+let indice=0;
+let pontos=0;
+
+const pergunta=document.getElementById("pergunta");
+const opcoes=document.getElementById("botoesOpcoes");
+const btn=document.getElementById("btnProximo");
+const barra=document.getElementById("barra");
+
+carregarPergunta();
+
+function carregarPergunta(){
+
+opcoes.innerHTML="";
+btn.style.display="none";
+
+pergunta.innerHTML=perguntas[indice].pergunta;
+
+barra.style.width=((indice)/perguntas.length)*100+"%";
+
+perguntas[indice].opcoes.forEach((texto,i)=>{
+
+const botao=document.createElement("button");
+
+botao.innerHTML=texto;
+
+botao.onclick=()=>responder(i,botao);
+
+opcoes.appendChild(botao);
+
+});
+
+}
+
+function responder(escolha,botao){
+
+const botoes=document.querySelectorAll("#botoesOpcoes button");
+
+botoes.forEach(b=>b.disabled=true);
+
+if(escolha==perguntas[indice].resposta){
+
+botao.classList.add("correta");
+
+pontos++;
+
+}else{
+
+botao.classList.add("errada");
+
+botoes[perguntas[indice].resposta].classList.add("correta");
+
+}
+
+btn.style.display="block";
+
+}
+
+btn.onclick=()=>{
+
+indice++;
+
+if(indice<perguntas.length){
+
+carregarPergunta();
+
+}else{
+
+mostrarResultado();
+
+}
+
+}
+
+function mostrarResultado(){
+
+let porcentagem=Math.round((pontos/perguntas.length)*100);
+
+let mensagem="";
+
+if(porcentagem==100){
+
+mensagem="🏆 Perfeito! Você sabe tudo sobre Copa do Mundo.";
+
+}else if(porcentagem>=70){
+
+mensagem="👏 Muito bem! Você entende bastante de futebol.";
+
+}else if(porcentagem>=50){
+
+mensagem="🙂 Bom resultado! Continue treinando.";
+
+}else{
+
+mensagem="😅 Você pode melhorar. Tente novamente.";
+
+}
+
+document.querySelector(".quiz-card").innerHTML=`
+
+<div class="resultado">
+
+<h1>🏆 Quiz Finalizado!</h1>
+
+<h2>${pontos}/${perguntas.length}</h2>
+
+<p>${porcentagem}% de aproveitamento</p>
+
+<br>
+
+<h3>${mensagem}</h3>
+
+<br><br>
+
+<button class="reiniciar" onclick="reiniciarQuiz()">
+🔄 Jogar Novamente
+</button>
+
+</div>
+
+`;
+
+}
+
+function reiniciarQuiz(){
+
+indice=0;
+
+pontos=0;
+
+document.querySelector(".quiz-card").innerHTML=`
+
+<div class="progresso">
+
+<div id="barra"></div>
+
+</div>
+
+<h2 id="pergunta"></h2>
+
+<div class="opcoes" id="botoesOpcoes"></div>
+
+<button id="btnProximo">
+Próxima Pergunta →
+</button>
+
+`;
+
+window.barra=document.getElementById("barra");
+window.pergunta=document.getElementById("pergunta");
+window.opcoes=document.getElementById("botoesOpcoes");
+window.btn=document.getElementById("btnProximo");
+
+btn.onclick=()=>{
+
+indice++;
+
+if(indice<perguntas.length){
+
+carregarPergunta();
+
+}else{
+
+mostrarResultado();
+
+}
+
+};
+
+carregarPergunta();
+
+}
+</script>
+</body>
+</html>
